@@ -2800,6 +2800,7 @@ class MinimumDiameterAfterMerge:
             out_edges2[edge[1]].append(edge[0])
             in_degree2[edge[0]] += 1
             in_degree2[edge[1]] += 1
+
         def topSort(out_edge, in_degree):
             memory = set()
             q = deque()
@@ -2826,4 +2827,39 @@ class MinimumDiameterAfterMerge:
         layer2, maxlength2 = topSort(out_edges2, in_degree2)
         return max(layer2 + layer1 + 1, maxlength1, maxlength2)
 
+
+class MinimumCost01:
+    def minimumCost(self, m, n, horizontalCut, verticalCut):
+        for i, val in enumerate(horizontalCut):
+            horizontalCut[i] = (val, i, 0)
+        for i, val in enumerate(verticalCut):
+            verticalCut[i] = (val, i, 1)
+        record = horizontalCut + verticalCut
+        record.sort(key=lambda x: -x[0])
+        rowCount, colCount, ans = 1, 1, 0
+        for i, val in enumerate(record):
+            if val[2]:
+                rowCount += 1
+                ans += colCount * val[0]
+            else:
+                colCount += 1
+                ans += rowCount * val[0]
+        return ans
+
+
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+class ModifiedList:
+    def modifiedList(self, nums, head):
+        memory = set(nums)
+        start = ListNode(val=-1, next=head)
+        cur = start
+        while cur:
+            while cur.next and cur.next.val in memory:
+                cur.next = cur.next.next
+            cur = cur.next
+        return start.next
 
