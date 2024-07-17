@@ -2852,6 +2852,8 @@ class ListNode:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
+
+
 class ModifiedList:
     def modifiedList(self, nums, head):
         memory = set(nums)
@@ -2863,3 +2865,67 @@ class ModifiedList:
             cur = cur.next
         return start.next
 
+
+class ValidStrings:
+    def validStrings(self, n):
+        start = ['0', '1']
+        for i in range(2, n + 1):
+            cur = []
+            for ele in start:
+                cur.append(ele + '1')
+                if ele[-1] == '1':
+                    cur.append(ele + '0')
+            start = cur
+        return start
+
+
+class NumberOfSubmatrices:
+    def numberOfSubmatrices(self, grid):
+        m, n = len(grid), len(grid[0])
+        record = [[[0, 0] for j in range(n)] for i in range(m)]
+        ans = 0
+        if grid[0][0] == 'X':
+            record[0][0][0] = 1
+        elif grid[0][0] == 'Y':
+            record[0][0][1] = 1
+        for j in range(1, n):
+            record[0][j] = record[0][j - 1][:]
+            if grid[0][j] == 'X':
+                record[0][j][0] += 1
+            elif grid[0][j] == 'Y':
+                record[0][j][1] += 1
+            if record[0][j][0] == record[0][j][1] and record[0][j][0] > 0:
+                ans += 1
+        for i in range(1, m):
+            record[i][0] = record[i - 1][0][:]
+            if grid[i][0] == 'X':
+                record[i][0][0] += 1
+            elif grid[i][0] == 'Y':
+                record[i][0][1] += 1
+            if record[i][0][0] == record[i][0][1] and record[i][0][0] > 0:
+                ans += 1
+        for i in range(1, m):
+            for j in range(1, n):
+                cur_x = record[i][j - 1][0] + record[i - 1][j][0] - record[i - 1][j - 1][0]
+                cur_y = record[i][j - 1][1] + record[i - 1][j][1] - record[i - 1][j - 1][1]
+                if grid[i][j] == 'X':
+                    record[i][j][0] = cur_x + 1
+                    record[i][j][1] = cur_y
+                elif grid[i][j] == 'Y':
+                    record[i][j][0] = cur_x
+                    record[i][j][1] = cur_y + 1
+                else:
+                    record[i][j][0] = cur_x
+                    record[i][j][1] = cur_y
+                if record[i][j][0] == record[i][j][1] and record[i][j][0] > 0:
+                    ans += 1
+        return ans
+
+
+class MaximumPoints:
+    def maximumPoints(self, enemyEnergies, currentEnergy):
+        min_energy = min(enemyEnergies)
+        if currentEnergy < min_energy:
+            return 0
+        currentEnergy -= min_energy * 2
+        return (sum(enemyEnergies) + currentEnergy) // min_energy + 1
