@@ -2929,3 +2929,19 @@ class MaximumPoints:
             return 0
         currentEnergy -= min_energy * 2
         return (sum(enemyEnergies) + currentEnergy) // min_energy + 1
+
+
+class NumberOfAlternatingGroups:
+    def numberOfAlternatingGroups(self, colors, k):
+        colors += colors[:k - 1]
+        ans = 0
+        l, r = 0, 1
+        while l <= len(colors) - k:
+            while r < len(colors) and colors[r] != colors[r - 1]:
+                if r - l == k - 1:
+                    ans += 1
+                    l += 1
+                r += 1
+            l = r
+            r += 1
+        return ans
