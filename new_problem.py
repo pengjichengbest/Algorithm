@@ -2945,3 +2945,81 @@ class NumberOfAlternatingGroups:
             l = r
             r += 1
         return ans
+
+
+class DoesAliceWin:
+    def doesAliceWin(self, s):
+        vowel = {'a', 'e', 'i', 'o', 'u'}
+        for val in s:
+            if val in vowel:
+                return True
+        return False
+
+
+class MaxOperations:
+    def maxOperations(self, s):
+        i, j, ans, n = 0, 1, 0, len(s)
+        flag = True
+        left = 0 if s[0] == '0' else 1
+        while i < n:
+            while j < n and s[j] == '0':
+                flag = False
+                j += 1
+            if not flag:
+                ans += left
+            flag = True
+            left += 1
+            i = j
+            j += 1
+        return ans
+
+
+from collections import Counter
+
+
+class MinChanges:
+    def minChanges(self, nums, k):
+        cnt = Counter()
+        ans = float('inf')
+        record = []
+        n, m = len(nums), len(nums) // 2
+        for i in range(m):
+            val = abs(nums[i] - nums[n - i - 1])
+            cnt[val] += 1
+            big, small = max(nums[i], nums[n - i - 1]), min(nums[i], nums[n - i - 1])
+            record.append(max(big, k - small))
+        record.sort()
+        j = 0
+        for i in range(k + 1):
+            while j < m and record[j] < i:
+                j += 1
+            ans = min(2 * j + m - j - cnt[i], ans)
+        return ans
+
+class MinimumLength:
+    def minimumLength(self, s):
+        ans = 0
+        record = {}
+        for i in s:
+            if i in record:
+                record[i] += 1
+            else:
+                record[i] = 1
+        for i, v in record.items():
+            if v % 2:
+                ans += 1
+            else:
+                ans += 2
+        return ans
+
+
+
+
+
+
+
+
+
+
+
+
