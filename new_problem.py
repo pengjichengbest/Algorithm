@@ -2996,6 +2996,7 @@ class MinChanges:
             ans = min(2 * j + m - j - cnt[i], ans)
         return ans
 
+
 class MinimumLength:
     def minimumLength(self, s):
         ans = 0
@@ -3013,8 +3014,78 @@ class MinimumLength:
         return ans
 
 
+class NumberOfSubstrings:
+    def numberOfSubstrings(self, s):
+        # 初始化两个字典，分别记录一下0和1出现不同个数的最新位置，这里先把出现个数为0的情况设为-1，方便后面计算
+        record_0, record_1 = {0: -1}, {0: -1}
+        # 记录每轮迭代0的总数和1的总数
+        count0, count1, ans = 0, 0, 0
+        # 进入主逻辑判断
+        for i, val in enumerate(s):
+            # 判断之前先更新0和1出现的最新位置以及总数
+            if val == '1':
+                count1 += 1
+                record_1[count1] = i
+            else:
+                count0 += 1
+                record_0[count0] = i
+            # 这里是关键: 当前i代表扫描的当前索引，以下的逻辑是计算以当前索引为i的字串成立的个数
+            # 计算方式就是枚举0的个数，由于1的个数要大于等于0个数的平方，所以这里只需要拿出统计1个数的开方值进行统计，
+            # 例如：如果当前以i为结尾时1的个数为10个，那么0只能出现在0到3个之间，我们只需分别统计以i索引结尾0出现0次到3次的所有字串，这样就把时间复杂度降到了O(N*√N)
+            # 如上所说，0出现的最大可能值max0
+            max0 = int(count1 ** 0.5)
+            for j in range(max0 + 1):
+                # 如果枚举到的当前0的个数大于了0的总数，直接退出
+                if j > count0:
+                    break
+                # 这里要特判一下，如果0的个数是0，直接进行索引相减计算就行
+                if not j:
+                    ans += i - record_0[count0]
+                    continue
+                # index1代表以i为结尾的子串，其中从右往左数第j * j个1的索引位置
+                index1 = record_1[count1 - j * j + 1]
+                # index0代表以i为结尾的子串，其中从右往左数第j个0的索引位置
+                index0 = record_0[count0 - j + 1]
+                # 以下要分三种情况进行判断，其实这里要分成三个点去考虑区间问题,分别是从右往左数第j个0、从右往左数第j + 1个0以及从右往左数第j * j个1的索引位置
+                # 我们分别记作x， y， z三个索引，当然x和z的索引坐标我们已经求完了分别是index0和index1，我们一下用x，y，z代替
+                # 这里要分情况讨论一下，实际很直观，当z在x的右侧，此时一定有解，但是要注意ans要加上y和x的横向距离，也就是两个0之间有多大距离就有多少个解
+                # 当z在y的左侧，此时一定没有解，因为1的个数一定小于0的个数的平方
+                # 当z在y和x的之间时，此时一定有解，但是要注意此时解的个数等于z - y，因为这个距离代表两个0之间有若干个1的个数，有几个1就有几个解
+                if index1 < record_0[count0 - j]:
+                    continue
+                if index1 > index0:
+                    ans += record_0[count0 - j + 1] - record_0[count0 - j]
+                    continue
+                ans += index1 - record_0[count0 - j]
+        return ans
 
 
+class NonSpecialCount:
+    def nonSpecialCount(self, l, r):
+        def prime_sieve(x):
+            ans = []
+            record = [False] * (x + 1)
+            for i in range(2, int(x ** 0.5) + 1):
+                if record[i]:
+                    continue
+                j = i
+                while j * i <= x:
+                    record[j * i] = True
+                    j += 1
+            for i in range(2, len(record)):
+                if not record[i]:
+                    ans.append(i)
+            return ans
+        maxV = int(r ** 0.5)
+        record = prime_sieve(maxV)
+        flag = False
+        for i, val in enumerate(record):
+            if val >= l ** 0.5:
+                record = record[i:]
+                flag = True
+                break
+        x = 0 if not flag else len(record)
+        return r - l + 1 - x
 
 
 
